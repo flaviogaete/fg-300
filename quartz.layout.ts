@@ -1,8 +1,9 @@
 import { PageLayout, SharedLayout } from "./quartz/cfg"
 import * as Component from "./quartz/components"
-
-// quartz.layout.ts (at the very top)
-// Make sure Links is in the import list ^^^^^
+// You need to import each standard component you use from ./quartz/components individually
+// AND import your custom ExternalLinks component.
+import { PageTitle, Spacer, Darkmode, Search, Explorer, ReaderMode } from "./quartz/components"
+import ExternalLinks from "./quartz/components/ExternalLinks"
 
 // components shared across all pages
 export const sharedPageComponents: SharedLayout = {
@@ -29,31 +30,34 @@ export const defaultContentPageLayout: PageLayout = {
     Component.TagList(),
   ],
   left: [
-    Component.PageTitle(),
-    Component.MobileOnly(Component.Spacer()),
+    PageTitle(), // Use directly as imported
+    Component.MobileOnly(Spacer()), // Use directly as imported
     Component.Flex({
       components: [
         {
-          Component: Component.Search(),
+          Component: Search(), // Use directly as imported
           grow: true,
         },
-        { Component: Component.Darkmode() },
+        { Component: Darkmode() }, // Use directly as imported
+        { Component: ReaderMode() }, // Use directly as imported
       ],
     }),
-    Component.Explorer(),
-    // ADD THE LINKS COMPONENT HERE AS WELL FOR LIST PAGES
-    Component.Links({
+    Explorer(), // Use directly as imported
+    // <--- THIS IS THE KEY CHANGE HERE: Use your custom ExternalLinks component
+    ExternalLinks({
+      title: "My Links", // Optional title for the section
       links: [
         {
           text: "My Personal Website",
           link: "https://your-personal-website.com/", // Make sure to update this URL
-          icon: "link",
+          // icon: "link", // Removed for simplicity, as it requires an Icon component
         },
         {
           text: "My GitHub Profile",
           link: "https://github.com/flaviogaete",
-          icon: "github",
+          // icon: "github", // Removed for simplicity
         },
+        // Add more links here as needed
       ],
     }),
   ],
@@ -68,18 +72,32 @@ export const defaultContentPageLayout: PageLayout = {
 export const defaultListPageLayout: PageLayout = {
   beforeBody: [Component.Breadcrumbs(), Component.ArticleTitle(), Component.ContentMeta()],
   left: [
-    Component.PageTitle(),
-    Component.MobileOnly(Component.Spacer()),
+    PageTitle(), // Use directly as imported
+    Component.MobileOnly(Spacer()), // Use directly as imported
     Component.Flex({
       components: [
         {
-          Component: Component.Search(),
+          Component: Search(), // Use directly as imported
           grow: true,
         },
-        { Component: Component.Darkmode() },
+        { Component: Darkmode() }, // Use directly as imported
       ],
     }),
-    Component.Explorer(),
+    Explorer(), // Use directly as imported
+    // <--- ADDING ExternalLinks HERE FOR LIST PAGES TOO
+    ExternalLinks({
+      title: "My Links", // Optional title for the section
+      links: [
+        {
+          text: "My Personal Website",
+          link: "https://your-personal-website.com/", // Make sure to update this URL
+        },
+        {
+          text: "My GitHub Profile",
+          link: "https://github.com/flaviogaete",
+        },
+      ],
+    }),
   ],
   right: [],
 }
