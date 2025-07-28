@@ -1,37 +1,41 @@
-name: Upload Preview Deployment
-on:
-  workflow_run:
-    workflows: ["Build Preview Deployment"]
-    types:
-      - completed
+# .github/workflows/deploy.yml
+name: Deploy Quartz Site
 
-permissions:
-  actions: read
-  deployments: write
-  contents: read
-  pull-requests: write
+on:
+  push:
+    branches: ["main"] # Or your main branch name, e.g., "master"
+    paths:
+      - "content/**"
+      - "quartz.config.ts"
+      - "quartz.layout.ts"
+      - "quartz/**"
+      - ".github/workflows/**"
 
 jobs:
-  deploy-preview:
-    if: ${{ github.repository == 'jackyzha0/quartz' && github.event.workflow_run.conclusion == 'success' }}
+  deploy:
     runs-on: ubuntu-latest
-    name: Deploy Preview to Cloudflare Pages
+    permissions:
+      contents: write
     steps:
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        id: preview-build-artifact
+      - uses: actions/checkout@v4
         with:
-          name: preview-build
-          path: build
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-id: ${{ github.event.workflow_run.id }}
+          fetch-depth: 0 # Fetch all history for Quartz Graph
 
-      - name: Deploy to Cloudflare Pages
-        uses: AdrianGonz97/refined-cf-pages-action@v1
+      - uses: actions/setup-node@v4
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          projectName: quartz
-          deploymentName: Branch Preview
-          directory: ${{ steps.preview-build-artifact.outputs.download-path }}
+          node-version: "22" # Ensure this matches your local nvm version
+
+      - name: Install dependencies
+        run: npm ci # Use npm ci for clean installs in CI environments
+
+      - name: Build Quartz
+        run: npx quartz build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4 # Use v4 for Node 20+ compatibility
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public # Quartz builds to the 'public' directory
+          user_name: "github-actions[bot]"
+          user_email: "github-actions[bot]@users.noreply.github.com"
+          # cname: example.com # Uncomment and set if you have a custom domain
