@@ -51,3 +51,7 @@ export {
   Flex,
   ConditionalRender,
 }
+
+export function Links(_arg0: { links: { text: string; link: string; icon: string }[] }): import("./types").QuartzComponent {
+  throw new Error("Function not implemented.")
+}

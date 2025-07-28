@@ -1,6 +1,9 @@
 import { PageLayout, SharedLayout } from "./quartz/cfg"
 import * as Component from "./quartz/components"
 
+// quartz.layout.ts (at the very top)
+// Make sure Links is in the import list ^^^^^
+
 // components shared across all pages
 export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
@@ -35,10 +38,24 @@ export const defaultContentPageLayout: PageLayout = {
           grow: true,
         },
         { Component: Component.Darkmode() },
-        { Component: Component.ReaderMode() },
       ],
     }),
     Component.Explorer(),
+    // ADD THE LINKS COMPONENT HERE AS WELL FOR LIST PAGES
+    Component.Links({
+      links: [
+        {
+          text: "My Personal Website",
+          link: "https://your-personal-website.com/", // Make sure to update this URL
+          icon: "link",
+        },
+        {
+          text: "My GitHub Profile",
+          link: "https://github.com/flaviogaete",
+          icon: "github",
+        },
+      ],
+    }),
   ],
   right: [
     Component.Graph(),
